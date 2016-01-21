@@ -1,0 +1,13 @@
+{
+	"name": "node-red-contrib-sitewhere",
+    "version": "1.5.0",
+    "description": "Node-RED SiteWhere Integration",
+    "dependencies": {
+    },
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "sitewhere": "sitewhere/sitewhere.js"
+        }
+    }
+}

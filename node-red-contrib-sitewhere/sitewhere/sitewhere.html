@@ -1,0 +1,82 @@
+<script type="text/javascript">
+	RED.nodes.registerType('sw-config', {
+		category : 'config',
+		defaults : {
+			name : {
+				value : "Default",
+				required : true
+			},
+			hwid : {
+				value : "123-TEST-4567890",
+				required : true
+			},
+			specification : {
+				value : "5a95f3f2-96f0-47f9-b98d-f5c081d01948",
+				required : true
+			},
+			site : {
+				value : "bb105f8d-3150-41f5-b9d1-db04965668d3",
+				required : true
+			},
+		},
+		label : function() {
+			return this.name;
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-hwid"><i class="icon-bookmark"></i> Hardware Id</label>
+        <input type="text" id="node-config-input-hwid">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-specification"><i class="icon-bookmark"></i> Device Specification</label>
+        <input type="text" id="node-config-input-specification">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-site"><i class="icon-bookmark"></i> Site</label>
+        <input type="text" id="node-config-input-site">
+    </div>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('sw-register', {
+		category : 'sitewhere',
+		defaults : {
+			name : {
+				value : "Register",
+			},
+			config : {
+				value : "",
+				type : "sw-config"
+			}
+		},
+		color : '#a6bbcf',
+		inputs : 1,
+		outputs : 1,
+		icon : "bridge.png",
+		label : function() {
+			return this.name || "register";
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-register">
+    <div class="form-row">
+        <label for="node-input-config"><i class="icon-bookmark"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sw-register">
+    <p>Registers a device with SiteWhere based on the selected configuration.</p>
+</script>
