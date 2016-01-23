@@ -1,3 +1,8 @@
+
+<!-- ################################################ -->
+<!-- # Common SiteWhere device configuration values # -->
+<!-- ################################################ -->
+
 <script type="text/javascript">
 	RED.nodes.registerType('sw-config', {
 		category : 'config',
@@ -44,6 +49,10 @@
     </div>
 </script>
 
+<!-- ################################################# -->
+<!-- # Send a device registration event to SiteWhere # -->
+<!-- ################################################# -->
+
 <script type="text/javascript">
 	RED.nodes.registerType('sw-register', {
 		category : 'sitewhere',
@@ -79,4 +88,113 @@
 
 <script type="text/x-red" data-help-name="sw-register">
     <p>Registers a device with SiteWhere based on the selected configuration.</p>
+</script>
+
+<!-- ############################################# -->
+<!-- # Send a device location event to SiteWhere # -->
+<!-- ############################################# -->
+
+<script type="text/javascript">
+	RED.nodes.registerType('sw-send-location', {
+		category : 'sitewhere',
+		defaults : {
+			name : {
+				value : "Send Location",
+			},
+			latitude : {
+				value : "",
+				required : false,
+				validate : RED.validators.number()
+			},
+			longitude : {
+				value : "",
+				required : false,
+				validate : RED.validators.number()
+			},
+			elevation : {
+				value : "",
+				required : false,
+				validate : RED.validators.number()
+			},
+			config : {
+				value : "",
+				type : "sw-config"
+			}
+		},
+		color : '#a6bbcf',
+		inputs : 1,
+		outputs : 1,
+		icon : "bridge.png",
+		label : function() {
+			return this.name || "location";
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-send-location">
+    <div class="form-row">
+        <label for="node-input-config"><i class="icon-bookmark"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+    <div class="form-row">
+        <label for="node-input-latitude"><i class="icon-bookmark"></i> Latitude</label>
+        <input type="text" id="node-input-latitude">
+    </div>
+    <div class="form-row">
+        <label for="node-input-longitude"><i class="icon-bookmark"></i> Longitude</label>
+        <input type="text" id="node-input-longitude">
+    </div>
+    <div class="form-row">
+        <label for="node-input-elevation"><i class="icon-bookmark"></i> Elevation</label>
+        <input type="text" id="node-input-elevation">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sw-send-location">
+    <p>Sends a location event to SiteWhere.</p>
+</script>
+
+<!-- ################################################# -->
+<!-- # Send a device measurements event to SiteWhere # -->
+<!-- ################################################# -->
+
+<script type="text/javascript">
+	RED.nodes.registerType('sw-send-measurements', {
+		category : 'sitewhere',
+		defaults : {
+			name : {
+				value : "Send Measurements",
+			},
+			config : {
+				value : "",
+				type : "sw-config"
+			}
+		},
+		color : '#a6bbcf',
+		inputs : 1,
+		outputs : 1,
+		icon : "bridge.png",
+		label : function() {
+			return this.name || "measurements";
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-send-measurements">
+    <div class="form-row">
+        <label for="node-input-config"><i class="icon-bookmark"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sw-send-measurements">
+    <p>Sends a measurements event to SiteWhere.</p>
 </script>

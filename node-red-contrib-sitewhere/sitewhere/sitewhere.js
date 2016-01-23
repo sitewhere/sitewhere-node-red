@@ -26,7 +26,7 @@ module.exports = function(RED) {
 	}
 	RED.nodes.registerType("sw-config", SiteWhereConfig);
 
-	/** SiteWhere Registration Node */
+	/** SiteWhere node for registering a device */
 	function SiteWhereRegisterNode(n) {
 		RED.nodes.createNode(this, n);
 		var node = this;
@@ -41,11 +41,11 @@ module.exports = function(RED) {
 				wrapper.type = "RegisterDevice";
 
 				// Create registration message.
-				var registration = {};
-				registration.hardwareId = this.config.hwid;
-				registration.specificationToken = this.config.specification;
-				registration.siteToken = this.config.site;
-				wrapper.request = registration;
+				var request = {};
+				request.hardwareId = this.config.hwid;
+				request.specificationToken = this.config.specification;
+				request.siteToken = this.config.site;
+				wrapper.request = request;
 
 				// Forward to transport.
 				msg.payload = JSON.stringify(wrapper);
@@ -56,4 +56,77 @@ module.exports = function(RED) {
 		});
 	}
 	RED.nodes.registerType("sw-register", SiteWhereRegisterNode);
+
+	/** SiteWhere node for sending a location */
+	function SiteWhereSendLocation(n) {
+		RED.nodes.createNode(this, n);
+		var node = this;
+
+		// Get handle to selected SiteWhere configuration.
+		this.config = RED.nodes.getNode(n.config);
+
+		this.on("input", function(msg) {
+			if (this.config) {
+				var wrapper = {};
+				wrapper.hardwareId = this.config.hwid;
+				wrapper.type = "DeviceLocation";
+
+				// Create device location message.
+				var request = {};
+				request.latitude = n.latitude;
+				request.longitude = n.longitude;
+				request.elevation = n.elevation;
+				request.updateState = n.updateState;
+				request.eventDate = (new Date()).toISOString();
+				wrapper.request = request;
+
+				// Forward to transport.
+				msg.payload = JSON.stringify(wrapper);
+				node.send(msg);
+			} else {
+				this.info("No configuration found!");
+			}
+		});
+	}
+	RED.nodes.registerType("sw-send-location", SiteWhereSendLocation);
+
+	/** SiteWhere node for sending measurements */
+	function SiteWhereSendMeasurements(n) {
+		RED.nodes.createNode(this, n);
+		var node = this;
+
+		// Get handle to selected SiteWhere configuration.
+		this.config = RED.nodes.getNode(n.config);
+
+		this.on("input", function(msg) {
+			if (this.config) {
+				var wrapper = {};
+				wrapper.hardwareId = this.config.hwid;
+				wrapper.type = "DeviceMeasurements";
+
+				// Create device measurements message.
+				var request = {};
+				
+				// Find message properties that start with 'mx:'.
+				var mxs = {};
+				Object.getOwnPropertyNames(msg).forEach(function(val, idx, array) {
+					if (val.startsWith('mx:')) {
+						mxs[val.substring(3)] = msg[val];
+					}
+				});
+				
+				request.measurements = mxs;
+				request.updateState = n.updateState;
+				request.eventDate = (new Date()).toISOString();
+				wrapper.request = request;
+
+				// Forward to transport.
+				msg.payload = JSON.stringify(wrapper);
+				node.send(msg);
+			} else {
+				this.info("No configuration found!");
+			}
+		});
+	}
+	RED.nodes.registerType("sw-send-measurements", SiteWhereSendMeasurements);
 }
