@@ -73,9 +73,9 @@ module.exports = function(RED) {
 
 				// Create device location message.
 				var request = {};
-				request.latitude = n.latitude;
-				request.longitude = n.longitude;
-				request.elevation = n.elevation;
+				request.latitude = msg['sw:latitude'] || n.latitude;
+				request.longitude = msg['sw:longitude'] || n.longitude;
+				request.elevation = msg['sw:elevation'] || n.elevation;
 				request.updateState = n.updateState;
 				request.eventDate = (new Date()).toISOString();
 				wrapper.request = request;
@@ -106,15 +106,20 @@ module.exports = function(RED) {
 
 				// Create device measurements message.
 				var request = {};
-				
+
 				// Find message properties that start with 'mx:'.
 				var mxs = {};
+				if (n.mxname && n.mxname.length > 0) {
+					mxs[n.mxname] = n.mxvalue;
+				}
+
+				// Add msg properites that start with mx: and are numeric
 				Object.getOwnPropertyNames(msg).forEach(function(val, idx, array) {
-					if (val.startsWith('mx:')) {
+					if (val.startsWith('mx:') && msg[val].toFixed) {
 						mxs[val.substring(3)] = msg[val];
 					}
 				});
-				
+
 				request.measurements = mxs;
 				request.updateState = n.updateState;
 				request.eventDate = (new Date()).toISOString();

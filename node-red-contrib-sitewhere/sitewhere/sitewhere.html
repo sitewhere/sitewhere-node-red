@@ -16,7 +16,7 @@
 				required : true
 			},
 			specification : {
-				value : "5a95f3f2-96f0-47f9-b98d-f5c081d01948",
+				value : "964e7613-dab3-4fb3-8919-266a91370884",
 				required : true
 			},
 			site : {
@@ -70,8 +70,9 @@
 		outputs : 1,
 		icon : "bridge.png",
 		label : function() {
-			return this.name || "register";
-		}
+			return this.name || "Register Device";
+		},
+		paletteLabel : "register"
 	});
 </script>
 
@@ -87,7 +88,14 @@
 </script>
 
 <script type="text/x-red" data-help-name="sw-register">
-    <p>Registers a device with SiteWhere based on the selected configuration.</p>
+    <p>Prepares the JSON payload for a SiteWhere registation event. The values in the
+		event are based on the settings in the referenced <strong>configuration</strong> 
+		element. The results of this node can be sent via MQTT to a topic monitored
+		by SiteWhere for delivery.</p>
+	<p>A new registration event is created based on the hardware id, device specification
+		token, and site token specified in the configuration node. A registration 
+		acknowledgement will be returned indicating if the device was able to be
+		registered or if there was an error or an existing registration.</>
 </script>
 
 <!-- ############################################# -->
@@ -126,8 +134,9 @@
 		outputs : 1,
 		icon : "bridge.png",
 		label : function() {
-			return this.name || "location";
-		}
+			return this.name || "Send Location";
+		},
+		paletteLabel : "location"
 	});
 </script>
 
@@ -155,7 +164,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="sw-send-location">
-    <p>Sends a location event to SiteWhere.</p>
+    <p>Prepares the JSON payload for a SiteWhere location event. The hardware id for the
+		event is based on the settings in the referenced <strong>configuration</strong> 
+		element. The results of this node can be sent via MQTT to a topic monitored
+		by SiteWhere for delivery.</p>
+	<p><strong>NOTE: The device must already be registered
+		with SiteWhere or this event will be ignored. See the registration node.</strong></p>
+	<p>A new SiteWhere location event is created based on the latitude, longitude, and elevation
+		specified in the editor. If the message object contains fields named <strong>sw:latitude</strong>,
+		<strong>sw:longitude</strong>, or <strong>sw:elevation</strong>, those values will override the ones
+		specified in the editor. This is intended to allow other nodes to gather the values
+		and pass them in for processing.</p>
 </script>
 
 <!-- ################################################# -->
@@ -169,6 +188,15 @@
 			name : {
 				value : "Send Measurements",
 			},
+			mxname : {
+				value : "",
+				required : false,
+			},
+			mxvalue : {
+				value : "",
+				required : false,
+				validate : RED.validators.number()
+			},
 			config : {
 				value : "",
 				type : "sw-config"
@@ -179,8 +207,9 @@
 		outputs : 1,
 		icon : "bridge.png",
 		label : function() {
-			return this.name || "measurements";
-		}
+			return this.name || "Send Measurements";
+		},
+		paletteLabel : "measurements"
 	});
 </script>
 
@@ -190,11 +219,28 @@
         <input type="text" id="node-input-config">
     </div>
     <div class="form-row">
+        <label for="node-input-mxname"><i class="icon-bookmark"></i> Mx Name</label>
+        <input type="text" id="node-input-mxname">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mxvalue"><i class="icon-bookmark"></i> Mx Value</label>
+        <input type="text" id="node-input-mxvalue">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="sw-send-measurements">
-    <p>Sends a measurements event to SiteWhere.</p>
+    <p>Prepares the JSON payload for a SiteWhere measurements event. The hardware id for the
+		event is based on the settings in the referenced <strong>configuration</strong> 
+		element. The results of this node can be sent via MQTT to a topic monitored
+		by SiteWhere for delivery.</p>
+	<p><strong>NOTE: The device must already be registered
+		with SiteWhere or this event will be ignored. See the registration node.</strong></p>
+	<p>A new SiteWhere measurements event is created based on the values specificed in the editor
+		If the message object contains fields named that start with <strong>mx:</strong>, those
+		fields will be added to (or override) the value in the editor. This is intended to allow 
+		other nodes to gather the values and pass them in for processing.</p>
 </script>
