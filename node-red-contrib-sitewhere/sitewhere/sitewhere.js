@@ -76,7 +76,7 @@ module.exports = function(RED) {
 				request.latitude = msg['sw:latitude'] || n.latitude;
 				request.longitude = msg['sw:longitude'] || n.longitude;
 				request.elevation = msg['sw:elevation'] || n.elevation;
-				request.updateState = n.updateState;
+				request.updateState = n.updstate;
 				request.eventDate = (new Date()).toISOString();
 				wrapper.request = request;
 
@@ -121,7 +121,7 @@ module.exports = function(RED) {
 				});
 
 				request.measurements = mxs;
-				request.updateState = n.updateState;
+				request.updateState = n.updstate;
 				request.eventDate = (new Date()).toISOString();
 				wrapper.request = request;
 
@@ -134,4 +134,37 @@ module.exports = function(RED) {
 		});
 	}
 	RED.nodes.registerType("sw-send-measurements", SiteWhereSendMeasurements);
+
+	/** SiteWhere node for sending alerts */
+	function SiteWhereSendAlert(n) {
+		RED.nodes.createNode(this, n);
+		var node = this;
+
+		// Get handle to selected SiteWhere configuration.
+		this.config = RED.nodes.getNode(n.config);
+
+		this.on("input", function(msg) {
+			if (this.config) {
+				var wrapper = {};
+				wrapper.hardwareId = this.config.hwid;
+				wrapper.type = "DeviceAlert";
+
+				// Create device alert message.
+				var request = {};
+				request.type = msg['sw:alertType'] || n.atype;
+				request.level = msg['sw:alertLevel'] || n.alevel;
+				request.message = msg['sw:alertMessage'] || n.amessage;
+				request.updateState = n.updstate;
+				request.eventDate = (new Date()).toISOString();
+				wrapper.request = request;
+
+				// Forward to transport.
+				msg.payload = JSON.stringify(wrapper);
+				node.send(msg);
+			} else {
+				this.info("No configuration found!");
+			}
+		});
+	}
+	RED.nodes.registerType("sw-send-alert", SiteWhereSendAlert);
 }
