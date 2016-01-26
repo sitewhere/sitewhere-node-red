@@ -96,7 +96,7 @@
 				type : "sw-config"
 			}
 		},
-		color : '#dc7777',
+		color : '#dc8888',
 		inputs : 1,
 		outputs : 1,
 		icon : "bridge.png",
@@ -163,7 +163,7 @@
 				type : "sw-config"
 			}
 		},
-		color : '#dc7777',
+		color : '#dc8888',
 		inputs : 1,
 		outputs : 1,
 		icon : "bridge.png",
@@ -214,6 +214,9 @@
 		<strong>sw:longitude</strong>, or <strong>sw:elevation</strong>, those values will override the ones
 		specified in the editor. This is intended to allow other nodes to gather the values
 		and pass them in for processing.</p>
+	<p>If the message object contains a field named <strong>sw:originator</strong>, the value
+		will be used as the originating event id to correlate the event back to the
+		originating event.</p>
 	<p>If <strong>update state</strong> is checked, the most recent location value
 		will be stored in the assignment and will act as a trigger for presence calculations</p>
 </script>
@@ -246,7 +249,7 @@
 				type : "sw-config"
 			}
 		},
-		color : '#dc7777',
+		color : '#dc8888',
 		inputs : 1,
 		outputs : 1,
 		icon : "bridge.png",
@@ -292,6 +295,9 @@
 		If the message object contains fields that start with <strong>mx:</strong>, those
 		fields will be added to (or override) the value in the editor. This is intended to allow 
 		other nodes to gather the values and pass them in for processing.</p>
+	<p>If the message object contains a field named <strong>sw:originator</strong>, the value
+		will be used as the originating event id to correlate the event back to the
+		originating event.</p>
 	<p>If <strong>update state</strong> is checked, the most recent value for each measurement
 		will be stored in the assignment and will act as a trigger for presence calculations</p>
 </script>
@@ -327,7 +333,7 @@
 				type : "sw-config"
 			}
 		},
-		color : '#dc7777',
+		color : '#dc8888',
 		inputs : 1,
 		outputs : 1,
 		icon : "bridge.png",
@@ -383,6 +389,121 @@
 		<strong>sw:alertLevel</strong>, and/or <strong>sw:alertMessage</strong>, those values will override the ones
 		specified in the editor. This is intended to allow other nodes to gather the values
 		and pass them in for processing.</p>
+	<p>If the message object contains a field named <strong>sw:originator</strong>, the value
+		will be used as the originating event id to correlate the event back to the
+		originating event.</p>
 	<p>If <strong>update state</strong> is checked, the most recent value for the alert type
 		will be stored in the assignment and will act as a trigger for presence calculations</p>
+</script>
+
+<!-- ############################################## -->
+<!-- # Send an acknowledgement event to SiteWhere # -->
+<!-- ############################################## -->
+
+<script type="text/javascript">
+	RED.nodes.registerType('sw-acknowledge', {
+		category : 'sitewhere',
+		defaults : {
+			name : {
+				value : "Send Acknowledgement",
+			},
+			response : {
+				value : "",
+				required : false,
+			},
+			updstate : {
+				value : false,
+			},
+			config : {
+				value : "",
+				type : "sw-config"
+			}
+		},
+		color : '#dc8888',
+		inputs : 1,
+		outputs : 1,
+		icon : "bridge.png",
+		label : function() {
+			return this.name || "Send Acknowledgement";
+		},
+		paletteLabel : "acknowledge"
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-acknowledge">
+    <div class="form-row">
+        <label class="sw-form-label" for="node-input-config"><i class="fa fa-gear"></i> Configuration</label>
+        <div class="sw-config-input"><input class="sw-form-input" type="text" id="node-input-config"></div>
+    </div>
+    <div class="form-row">
+        <label class="sw-form-label" for="node-input-name"><i class="fa fa-info"></i> Name</label>
+        <input class="sw-form-input" type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label class="sw-form-label for="node-input-response"><i class="fa fa-info"></i> Response</label>
+        <input class="sw-form-input" type="text" id="node-input-response">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sw-acknowledge">
+    <p>Prepares the JSON payload for a SiteWhere acknowledgement event. The hardware id for the
+		event is based on the settings in the referenced <strong>configuration</strong> 
+		element. The results of this node can be sent via MQTT to a topic monitored
+		by SiteWhere for delivery.</p>
+	<p><strong>NOTE: The device must already be registered
+		with SiteWhere or this event will be ignored. See the registration node.</strong></p>
+	<p>A new SiteWhere command response event is created based on the response value
+		specified in the editor. If the message object contains a field named <strong>sw:response</strong>,
+		the value will override the one specified in the editor. This is intended to allow other nodes 
+		to gather the values and pass them in for processing.</p>
+	<p>If the message object contains a field named <strong>sw:originator</strong>, the value
+		will be used as the originating event id to correlate the acknowledgement back to the
+		originating event.</p>
+</script>
+
+<!-- ############################################## -->
+<!-- # Parse received command into message fields # -->
+<!-- ############################################## -->
+
+<script type="text/javascript">
+	RED.nodes.registerType('sw-parse-command', {
+		category : 'sitewhere',
+		defaults : {
+			name : {
+				value : "Parse Command",
+			}
+		},
+		color : '#dc8888',
+		inputs : 1,
+		outputs : 1,
+		icon : "bridge.png",
+		label : function() {
+			return this.name || "Parse Command";
+		},
+		paletteLabel : "command"
+	});
+</script>
+
+<script type="text/x-red" data-template-name="sw-parse-command">
+    <div class="form-row">
+        <label class="sw-form-label" for="node-input-name"><i class="fa fa-info"></i> Name</label>
+        <input class="sw-form-input" type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sw-parse-command">
+    <p>Parses information sent from SiteWhere that indicates a command is to be executed
+		on the device. This takes the JSON response from SiteWhere and parses out the
+		key pieces of information while leaving the extra context information 
+		provided by default. The following message fields are automatically populated:</p>
+	<p><strong>sw:originator</strong> - The id of the device command invocation event that
+		is triggering this command. This will automatically be used in the 
+		<strong>acknowledge</strong> node as well as the other event nodes to correlate
+		responses back to the original event.</p>
+	<p><strong>sw:command</strong> - The name of the command to execute as declared in the
+		device specification.</p>
+	<p><strong>sw:parameters</strong> - An associative array of parameters values as provided
+		when the command was invoked.</p>
+	<p><strong>sw:initiator</strong> - Type of entity that initiated the command.</p>
+	<p><strong>sw:initiatorId</strong> - Unique identifier for entity that initiated the command.</p>
 </script>

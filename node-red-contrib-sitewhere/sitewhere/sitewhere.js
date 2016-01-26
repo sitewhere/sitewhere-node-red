@@ -69,6 +69,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
+				request.originator = msg['sw:originator'];
 				wrapper.type = "DeviceLocation";
 
 				// Create device location message.
@@ -102,6 +103,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
+				request.originator = msg['sw:originator'];
 				wrapper.type = "DeviceMeasurements";
 
 				// Create device measurements message.
@@ -147,6 +149,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
+				request.originator = msg['sw:originator'];
 				wrapper.type = "DeviceAlert";
 
 				// Create device alert message.
@@ -167,4 +170,56 @@ module.exports = function(RED) {
 		});
 	}
 	RED.nodes.registerType("sw-send-alert", SiteWhereSendAlert);
+
+	/** SiteWhere node for sending an acknowledgement */
+	function SiteWhereAcknowledge(n) {
+		RED.nodes.createNode(this, n);
+		var node = this;
+
+		// Get handle to selected SiteWhere configuration.
+		this.config = RED.nodes.getNode(n.config);
+
+		this.on("input", function(msg) {
+			if (this.config) {
+				var wrapper = {};
+				wrapper.hardwareId = this.config.hwid;
+				wrapper.type = "Acknowledge";
+
+				// Create device location message.
+				var request = {};
+				request.response = msg['sw:response'] || n.response;
+				request.originatingEventId = msg['sw:originator'];
+				request.updateState = n.updstate;
+				request.eventDate = (new Date()).toISOString();
+				wrapper.request = request;
+
+				// Forward to transport.
+				msg.payload = JSON.stringify(wrapper);
+				node.send(msg);
+			} else {
+				this.info("No configuration found!");
+			}
+		});
+	}
+	RED.nodes.registerType("sw-acknowledge", SiteWhereAcknowledge);
+
+	/** SiteWhere node for parsing command details */
+	function SiteWhereParseCommand(n) {
+		RED.nodes.createNode(this, n);
+		var node = this;
+
+		this.on("input", function(msg) {
+			var data = JSON.parse(msg.payload);
+			if (data) {
+				msg['sw:command'] = data.command.command.name;
+				msg['sw:parameters'] = data.command.invocation.parameterValues;
+				msg['sw:originator'] = data.command.invocation.id;
+				msg['sw:initiator'] = data.command.invocation.initiator;
+				msg['sw:initiatorId'] = data.command.invocation.initiatorId;
+				msg.payload = data.command.command.name;
+				node.send(msg);
+			}
+		});
+	}
+	RED.nodes.registerType("sw-parse-command", SiteWhereParseCommand);
 }
