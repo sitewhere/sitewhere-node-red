@@ -69,7 +69,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
-				request.originator = msg['sw:originator'];
+				wrapper.originator = msg['sw:originator'];
 				wrapper.type = "DeviceLocation";
 
 				// Create device location message.
@@ -103,7 +103,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
-				request.originator = msg['sw:originator'];
+				wrapper.originator = msg['sw:originator'];
 				wrapper.type = "DeviceMeasurements";
 
 				// Create device measurements message.
@@ -149,7 +149,7 @@ module.exports = function(RED) {
 			if (this.config) {
 				var wrapper = {};
 				wrapper.hardwareId = this.config.hwid;
-				request.originator = msg['sw:originator'];
+				wrapper.originator = msg['sw:originator'];
 				wrapper.type = "DeviceAlert";
 
 				// Create device alert message.
