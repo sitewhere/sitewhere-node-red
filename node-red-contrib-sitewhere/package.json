@@ -1,13 +1,23 @@
 {
 	"name": "node-red-contrib-sitewhere",
-    "version": "1.5.0",
+    "version": "1.6.2",
     "description": "Node-RED SiteWhere Integration",
     "dependencies": {
     },
-    "keywords": [ "node-red" ],
+	"repository" : {
+		"type": "git",
+		"url": "https://github.com/sitewhere/sitewhere-node-red.git"
+	},
+	"license": "Apache-2.0",
+    "keywords": [ "node-red", "iot", "sitewhere" ],
     "node-red" : {
         "nodes": {
             "sitewhere": "sitewhere/sitewhere.js"
         }
-    }
+    },
+	"author": {
+		"name": "Derek Adams",
+		"email": "derek.adams@sitewhere.com",
+		"url": "http://www.sitewhere.org/"
+	}
 }

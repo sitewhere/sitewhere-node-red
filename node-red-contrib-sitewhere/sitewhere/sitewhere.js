@@ -117,7 +117,7 @@ module.exports = function(RED) {
 
 				// Add msg properites that start with mx: and are numeric
 				Object.getOwnPropertyNames(msg).forEach(function(val, idx, array) {
-					if (val.startsWith('mx:') && msg[val].toFixed) {
+					if ((val.substring(0, 3) === 'mx:') && msg[val].toFixed) {
 						mxs[val.substring(3)] = msg[val];
 					}
 				});
@@ -222,4 +222,10 @@ module.exports = function(RED) {
 		});
 	}
 	RED.nodes.registerType("sw-parse-command", SiteWhereParseCommand);
+
+	/** Test for string value */
+	function isString(val) {
+		return typeof val === 'string' || ((!!val && typeof val === 'object') && 
+				Object.prototype.toString.call(val) === '[object String]');
+	}
 }
