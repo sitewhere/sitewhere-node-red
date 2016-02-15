@@ -117,7 +117,7 @@ module.exports = function(RED) {
 
 				// Add msg properites that start with mx: and are numeric
 				Object.getOwnPropertyNames(msg).forEach(function(val, idx, array) {
-					if ((val.substring(0, 3) === 'mx:') && msg[val].toFixed) {
+					if (val.substring(0, 3) === 'mx:') {
 						mxs[val.substring(3)] = msg[val];
 					}
 				});
